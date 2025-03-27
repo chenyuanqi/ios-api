@@ -6,17 +6,29 @@
 - 所有包含请求体的请求必须指定内容类型为 `Content-Type: application/json`
 - 所有需要认证的请求都需要在请求头中包含 `Authorization: Bearer {token}`
 
-## 错误处理
+## 响应格式
 
-所有 API 请求如果发生错误，将返回相应的 HTTP 状态码和错误信息，格式如下：
+所有 API 请求都将返回统一的响应格式：
 
 ```json
 {
-  "error": "错误信息"
+  "code": 0,        // 响应码，0表示成功，非0表示错误
+  "message": "成功", // 响应消息
+  "data": {}        // 响应数据，具体内容根据接口不同而不同
 }
 ```
 
-常见 HTTP 状态码：
+### 响应码说明
+- `0`: 成功
+- `1001`: 参数错误
+- `1002`: 未授权
+- `1004`: 资源不存在
+- `1009`: 资源冲突（如邮箱已注册）
+- `2000`: 服务器内部错误
+
+### HTTP 状态码
+
+API 同时使用标准的 HTTP 状态码表示请求结果：
 - 200: 请求成功
 - 201: 创建成功
 - 400: 请求参数错误
@@ -47,17 +59,20 @@
 
 ```json
 {
+  "code": 0,
   "message": "注册成功",
-  "user": {
-    "id": 1,
-    "email": "user@example.com",
-    "nickname": "用户昵称",
-    "avatar": null,
-    "signature": null,
-    "created_at": "2023-03-27T08:00:00Z",
-    "updated_at": "2023-03-27T08:00:00Z"
-  },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "data": {
+    "user": {
+      "id": 1,
+      "email": "user@example.com",
+      "nickname": "用户昵称",
+      "avatar": null,
+      "signature": null,
+      "created_at": "2023-03-27T08:00:00Z",
+      "updated_at": "2023-03-27T08:00:00Z"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
 }
 ```
 
@@ -80,17 +95,20 @@
 
 ```json
 {
+  "code": 0,
   "message": "登录成功",
-  "user": {
-    "id": 1,
-    "email": "user@example.com",
-    "nickname": "用户昵称",
-    "avatar": "https://example.com/avatar.jpg",
-    "signature": "个性签名",
-    "created_at": "2023-03-27T08:00:00Z",
-    "updated_at": "2023-03-27T08:00:00Z"
-  },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "data": {
+    "user": {
+      "id": 1,
+      "email": "user@example.com",
+      "nickname": "用户昵称",
+      "avatar": "https://example.com/avatar.jpg",
+      "signature": "个性签名",
+      "created_at": "2023-03-27T08:00:00Z",
+      "updated_at": "2023-03-27T08:00:00Z"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
 }
 ```
 
@@ -116,17 +134,20 @@
 
 ```json
 {
+  "code": 0,
   "message": "登录成功",
-  "user": {
-    "id": 1,
-    "email": null,
-    "nickname": "用户昵称",
-    "avatar": "https://example.com/avatar.jpg",
-    "signature": null,
-    "created_at": "2023-03-27T08:00:00Z",
-    "updated_at": "2023-03-27T08:00:00Z"
-  },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "data": {
+    "user": {
+      "id": 1,
+      "email": null,
+      "nickname": "用户昵称",
+      "avatar": "https://example.com/avatar.jpg",
+      "signature": null,
+      "created_at": "2023-03-27T08:00:00Z",
+      "updated_at": "2023-03-27T08:00:00Z"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
 }
 ```
 
@@ -149,7 +170,11 @@
 
 ```json
 {
-  "auth_url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=..."
+  "code": 0,
+  "message": "获取微信授权链接成功",
+  "data": {
+    "auth_url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=..."
+  }
 }
 ```
 
@@ -167,17 +192,20 @@
 
 ```json
 {
+  "code": 0,
   "message": "微信登录成功",
-  "user": {
-    "id": 1,
-    "email": null,
-    "nickname": "微信用户昵称",
-    "avatar": "https://微信头像URL",
-    "signature": null,
-    "created_at": "2023-03-27T08:00:00Z",
-    "updated_at": "2023-03-27T08:00:00Z"
-  },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "data": {
+    "user": {
+      "id": 1,
+      "email": null,
+      "nickname": "微信用户昵称",
+      "avatar": "https://微信头像URL",
+      "signature": null,
+      "created_at": "2023-03-27T08:00:00Z",
+      "updated_at": "2023-03-27T08:00:00Z"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
 }
 ```
 
@@ -199,7 +227,11 @@
 
 ```json
 {
-  "message": "苹果登录需要在客户端实现，请在客户端完成授权后，将授权结果发送到 /api/v1/oauth/apple/callback"
+  "code": 0,
+  "message": "苹果登录说明",
+  "data": {
+    "instruction": "苹果登录需要在客户端实现，请在客户端完成授权后，将授权结果发送到 /api/v1/oauth/apple/callback"
+  }
 }
 ```
 
@@ -226,17 +258,20 @@
 
 ```json
 {
+  "code": 0,
   "message": "苹果登录成功",
-  "user": {
-    "id": 1,
-    "email": "user@example.com",
-    "nickname": "Apple User",
-    "avatar": null,
-    "signature": null,
-    "created_at": "2023-03-27T08:00:00Z",
-    "updated_at": "2023-03-27T08:00:00Z"
-  },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "data": {
+    "user": {
+      "id": 1,
+      "email": "user@example.com",
+      "nickname": "Apple User",
+      "avatar": null,
+      "signature": null,
+      "created_at": "2023-03-27T08:00:00Z",
+      "updated_at": "2023-03-27T08:00:00Z"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
 }
 ```
 
@@ -255,7 +290,9 @@ Authorization: Bearer {token}
 
 ```json
 {
-  "message": "退出登录成功"
+  "code": 0,
+  "message": "退出登录成功",
+  "data": null
 }
 ```
 
@@ -274,15 +311,18 @@ Authorization: Bearer {token}
 
 ```json
 {
+  "code": 0,
   "message": "获取用户信息成功",
-  "user": {
-    "id": 1,
-    "email": "user@example.com",
-    "nickname": "用户昵称",
-    "avatar": "https://example.com/avatar.jpg",
-    "signature": "个性签名",
-    "created_at": "2023-03-27T08:00:00Z",
-    "updated_at": "2023-03-27T08:00:00Z"
+  "data": {
+    "user": {
+      "id": 1,
+      "email": "user@example.com",
+      "nickname": "用户昵称",
+      "avatar": "https://example.com/avatar.jpg",
+      "signature": "个性签名",
+      "created_at": "2023-03-27T08:00:00Z",
+      "updated_at": "2023-03-27T08:00:00Z"
+    }
   }
 }
 ```
@@ -312,15 +352,70 @@ Authorization: Bearer {token}
 
 ```json
 {
+  "code": 0,
   "message": "更新用户信息成功",
-  "user": {
-    "id": 1,
-    "email": "user@example.com",
-    "nickname": "新昵称",
-    "avatar": "https://example.com/new-avatar.jpg",
-    "signature": "新个性签名",
-    "created_at": "2023-03-27T08:00:00Z",
-    "updated_at": "2023-03-27T09:00:00Z"
+  "data": {
+    "user": {
+      "id": 1,
+      "email": "user@example.com",
+      "nickname": "新昵称",
+      "avatar": "https://example.com/new-avatar.jpg",
+      "signature": "新个性签名",
+      "created_at": "2023-03-27T08:00:00Z",
+      "updated_at": "2023-03-27T09:00:00Z"
+    }
   }
+}
+```
+
+## 错误响应示例
+
+### 参数错误 (400)
+
+```json
+{
+  "code": 1001,
+  "message": "请求参数错误: 邮箱格式不正确",
+  "data": null
+}
+```
+
+### 未授权 (401)
+
+```json
+{
+  "code": 1002,
+  "message": "登录已过期，请重新登录",
+  "data": null
+}
+```
+
+### 资源不存在 (404)
+
+```json
+{
+  "code": 1004,
+  "message": "用户不存在",
+  "data": null
+}
+```
+
+### 资源冲突 (409)
+
+```json
+{
+  "code": 1009,
+  "message": "邮箱已被注册",
+  "data": null
+}
+```
+
+### 服务器错误 (500)
+
+```json
+{
+  "code": 2000,
+  "message": "服务器内部错误",
+  "data": null
 }
 ``` 

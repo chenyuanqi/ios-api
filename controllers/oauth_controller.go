@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	"net/http"
-
 	"ios-api/services"
+	"ios-api/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -46,7 +45,7 @@ type AppleCallbackRequest struct {
 func (c *OAuthController) WechatAuthURL(ctx *gin.Context) {
 	var req WechatAuthRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "请求参数错误: " + err.Error()})
+		utils.ParamError(ctx, "请求参数错误: "+err.Error())
 		return
 	}
 
@@ -56,7 +55,7 @@ func (c *OAuthController) WechatAuthURL(ctx *gin.Context) {
 	// 获取授权URL
 	authURL := c.WechatService.GetAuthURL(req.State)
 
-	ctx.JSON(http.StatusOK, gin.H{
+	utils.Success(ctx, "获取微信授权链接成功", gin.H{
 		"auth_url": authURL,
 	})
 }
@@ -65,28 +64,27 @@ func (c *OAuthController) WechatAuthURL(ctx *gin.Context) {
 func (c *OAuthController) WechatCallback(ctx *gin.Context) {
 	var req WechatCallbackRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "请求参数错误: " + err.Error()})
+		utils.ParamError(ctx, "请求参数错误: "+err.Error())
 		return
 	}
 
 	// 处理微信回调
 	oauthParams, err := c.WechatService.HandleCallback(req.Code)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "微信授权处理失败: " + err.Error()})
+		utils.ServerError(ctx, "微信授权处理失败: "+err.Error())
 		return
 	}
 
 	// 使用OAuth参数进行登录
 	user, token, err := c.UserService.OAuthLogin(*oauthParams)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "登录失败: " + err.Error()})
+		utils.ServerError(ctx, "登录失败: "+err.Error())
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "微信登录成功",
-		"user":    user,
-		"token":   token,
+	utils.Success(ctx, "微信登录成功", gin.H{
+		"user":  user,
+		"token": token,
 	})
 }
 
@@ -94,13 +92,13 @@ func (c *OAuthController) WechatCallback(ctx *gin.Context) {
 func (c *OAuthController) AppleAuth(ctx *gin.Context) {
 	var req AppleAuthRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "请求参数错误: " + err.Error()})
+		utils.ParamError(ctx, "请求参数错误: "+err.Error())
 		return
 	}
 
 	// 客户端直接处理苹果登录，后端不需要返回URL
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "苹果登录需要在客户端实现，请在客户端完成授权后，将授权结果发送到 /api/v1/oauth/apple/callback",
+	utils.Success(ctx, "苹果登录说明", gin.H{
+		"instruction": "苹果登录需要在客户端实现，请在客户端完成授权后，将授权结果发送到 /api/v1/oauth/apple/callback",
 	})
 }
 
@@ -108,7 +106,7 @@ func (c *OAuthController) AppleAuth(ctx *gin.Context) {
 func (c *OAuthController) AppleCallback(ctx *gin.Context) {
 	var req AppleCallbackRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "请求参数错误: " + err.Error()})
+		utils.ParamError(ctx, "请求参数错误: "+err.Error())
 		return
 	}
 
@@ -121,20 +119,19 @@ func (c *OAuthController) AppleCallback(ctx *gin.Context) {
 	// 处理苹果回调
 	oauthParams, err := c.AppleService.HandleCallback(req.Code, req.IdToken, name, req.Email)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "苹果授权处理失败: " + err.Error()})
+		utils.ServerError(ctx, "苹果授权处理失败: "+err.Error())
 		return
 	}
 
 	// 使用OAuth参数进行登录
 	user, token, err := c.UserService.OAuthLogin(*oauthParams)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "登录失败: " + err.Error()})
+		utils.ServerError(ctx, "登录失败: "+err.Error())
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "苹果登录成功",
-		"user":    user,
-		"token":   token,
+	utils.Success(ctx, "苹果登录成功", gin.H{
+		"user":  user,
+		"token": token,
 	})
 }

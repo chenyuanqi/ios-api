@@ -1,10 +1,10 @@
 package middlewares
 
 import (
-	"net/http"
 	"strings"
 
 	"ios-api/services"
+	"ios-api/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +15,7 @@ func AuthMiddleware(userService *services.UserService) gin.HandlerFunc {
 		// 从 Authorization header 获取 token
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "未提供认证信息"})
+			utils.Unauthorized(c, "未提供认证信息")
 			c.Abort()
 			return
 		}
@@ -23,7 +23,7 @@ func AuthMiddleware(userService *services.UserService) gin.HandlerFunc {
 		// Bearer Token
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "认证格式错误"})
+			utils.Unauthorized(c, "认证格式错误")
 			c.Abort()
 			return
 		}
@@ -39,7 +39,7 @@ func AuthMiddleware(userService *services.UserService) gin.HandlerFunc {
 			} else if err == services.ErrInvalidToken {
 				errMsg = "无效的认证信息"
 			}
-			c.JSON(http.StatusUnauthorized, gin.H{"error": errMsg})
+			utils.Unauthorized(c, errMsg)
 			c.Abort()
 			return
 		}
