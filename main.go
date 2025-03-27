@@ -30,6 +30,7 @@ func main() {
 	userService := &services.UserService{
 		DB:        db,
 		JWTSecret: cfg.JWTSecret,
+		Config:    cfg,
 	}
 
 	// 创建 Gin 实例

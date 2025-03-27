@@ -10,9 +10,30 @@ import (
 
 // SetupRoutes 设置路由
 func SetupRoutes(r *gin.Engine, userService *services.UserService) {
+	// 创建微信服务
+	wechatService := &services.WechatService{
+		AppID:     userService.Config.WechatAppID,
+		AppSecret: userService.Config.WechatAppSecret,
+	}
+
+	// 创建苹果服务
+	appleService := &services.AppleService{
+		TeamID:     userService.Config.AppleTeamID,
+		KeyID:      userService.Config.AppleKeyID,
+		PrivateKey: userService.Config.ApplePrivateKey,
+		BundleID:   userService.Config.AppleBundleID,
+	}
+
 	// 创建控制器
 	userController := &controllers.UserController{
 		UserService: userService,
+	}
+
+	// 创建OAuth控制器
+	oauthController := &controllers.OAuthController{
+		UserService:   userService,
+		WechatService: wechatService,
+		AppleService:  appleService,
 	}
 
 	// 无需认证的路由
@@ -24,6 +45,14 @@ func SetupRoutes(r *gin.Engine, userService *services.UserService) {
 		v1.POST("/login", userController.Login)
 		// 第三方登录
 		v1.POST("/oauth/login", userController.OAuthLogin)
+
+		// 微信授权相关
+		v1.POST("/oauth/wechat/auth", oauthController.WechatAuthURL)
+		v1.GET("/oauth/wechat/callback", oauthController.WechatCallback)
+
+		// 苹果授权相关
+		v1.POST("/oauth/apple/auth", oauthController.AppleAuth)
+		v1.POST("/oauth/apple/callback", oauthController.AppleCallback)
 	}
 
 	// 需要认证的路由

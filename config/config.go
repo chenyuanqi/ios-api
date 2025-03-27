@@ -17,6 +17,16 @@ type Config struct {
 	DBName     string
 	JWTSecret  string
 	AppPort    int
+
+	// 微信登录配置
+	WechatAppID     string
+	WechatAppSecret string
+
+	// 苹果登录配置
+	AppleTeamID     string
+	AppleKeyID      string
+	ApplePrivateKey string
+	AppleBundleID   string
 }
 
 // LoadConfig 从环境变量加载配置
@@ -38,6 +48,16 @@ func LoadConfig() (*Config, error) {
 		DBName:     getEnv("DB_NAME", "yuanqi_ios"),
 		JWTSecret:  getEnv("JWT_SECRET", "default_jwt_secret"),
 		AppPort:    appPort,
+
+		// 微信登录配置
+		WechatAppID:     getEnv("WECHAT_APP_ID", ""),
+		WechatAppSecret: getEnv("WECHAT_APP_SECRET", ""),
+
+		// 苹果登录配置
+		AppleTeamID:     getEnv("APPLE_TEAM_ID", ""),
+		AppleKeyID:      getEnv("APPLE_KEY_ID", ""),
+		ApplePrivateKey: getEnv("APPLE_PRIVATE_KEY", ""),
+		AppleBundleID:   getEnv("APPLE_BUNDLE_ID", ""),
 	}, nil
 }
 
@@ -54,4 +74,4 @@ func getEnv(key, defaultValue string) string {
 		return defaultValue
 	}
 	return value
-} 
+}

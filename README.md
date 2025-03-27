@@ -60,6 +60,16 @@ DB_PORT=your_db_port
 DB_NAME=your_db_name
 JWT_SECRET=your_jwt_secret
 APP_PORT=8080
+
+# 微信登录配置
+WECHAT_APP_ID=your_wechat_app_id
+WECHAT_APP_SECRET=your_wechat_app_secret
+
+# 苹果登录配置
+APPLE_TEAM_ID=your_apple_team_id
+APPLE_KEY_ID=your_apple_key_id
+APPLE_PRIVATE_KEY=path_to_your_private_key_or_key_string
+APPLE_BUNDLE_ID=your_app_bundle_id
 ```
 
 详细的环境配置说明请参考 [环境配置文档](./docs/environment.md)。
@@ -72,6 +82,72 @@ mysql -u root -p < migrate.sql
 5. 运行项目
 ```bash
 go run main.go
+```
+
+## 第三方登录配置
+
+### 微信登录配置
+
+要启用微信登录功能，需要完成以下步骤：
+
+1. 在[微信开放平台](https://open.weixin.qq.com/)注册开发者账号
+2. 创建移动应用并获取 AppID 和 AppSecret
+3. 在`.env`文件中配置以下参数：
+   ```
+   WECHAT_APP_ID=your_wechat_app_id
+   WECHAT_APP_SECRET=your_wechat_app_secret
+   ```
+4. 在 iOS 客户端集成微信 SDK：
+   - 在 [微信开放平台](https://developers.weixin.qq.com/doc/oplatform/Mobile_App/Access_Guide/iOS.html) 下载 iOS SDK
+   - 按照文档配置 URL Scheme 为 `wx` + AppID
+   - 在 `Info.plist` 中添加 LSApplicationQueriesSchemes 字段，包含 `weixin` 值
+   - 实现微信授权并获取授权码 (code)
+   - 将授权码发送到后端 API 获取用户信息
+
+### 苹果登录配置
+
+要启用苹果登录功能，需要完成以下步骤：
+
+1. 在 [Apple Developer](https://developer.apple.com/) 注册开发者账号
+2. 配置 "Sign in with Apple" 功能：
+   - 在 Certificates, Identifiers & Profiles 中启用 "Sign in with Apple" capability
+   - 创建 Services ID 并配置域名和重定向 URL
+   - 获取 Team ID、Key ID 和私钥文件
+3. 在`.env`文件中配置以下参数：
+   ```
+   APPLE_TEAM_ID=your_apple_team_id
+   APPLE_KEY_ID=your_apple_key_id
+   APPLE_PRIVATE_KEY=path_to_your_private_key_or_key_string
+   APPLE_BUNDLE_ID=your_app_bundle_id
+   ```
+4. 在 iOS 客户端集成 Apple 登录：
+   - 启用 "Sign in with Apple" capability
+   - 使用 AuthenticationServices 框架实现苹果登录
+   - 获取用户标识符和授权码
+   - 将授权信息发送到后端 API 验证身份
+
+### API 调用示例
+
+使用微信登录：
+```json
+POST /api/v1/oauth/login
+{
+  "provider": "wechat",
+  "provider_user_id": "微信用户唯一标识",
+  "nickname": "微信昵称",
+  "avatar": "头像URL"
+}
+```
+
+使用苹果登录：
+```json
+POST /api/v1/oauth/login
+{
+  "provider": "apple",
+  "provider_user_id": "苹果用户唯一标识",
+  "nickname": "用户昵称",
+  "avatar": "头像URL"
+}
 ```
 
 ## API 文档

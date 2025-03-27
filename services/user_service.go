@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"ios-api/config"
 	"ios-api/models"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -15,6 +16,7 @@ import (
 type UserService struct {
 	DB        *gorm.DB
 	JWTSecret string
+	Config    *config.Config
 }
 
 // 用户注册参数
@@ -36,6 +38,7 @@ type OAuthLoginParams struct {
 	ProviderUserID string `json:"provider_user_id" binding:"required"`
 	Nickname       string `json:"nickname"`
 	Avatar         string `json:"avatar"`
+	Email          string `json:"email"`
 }
 
 // 更新用户信息参数
@@ -177,6 +180,7 @@ func (s *UserService) OAuthLogin(params OAuthLoginParams) (*models.User, string,
 	user := models.User{
 		Nickname: params.Nickname,
 		Avatar:   params.Avatar,
+		Email:    params.Email,
 	}
 
 	if err := tx.Create(&user).Error; err != nil {

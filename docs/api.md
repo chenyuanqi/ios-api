@@ -107,7 +107,8 @@
   "provider": "wechat", // 或 "apple"
   "provider_user_id": "第三方用户ID",
   "nickname": "用户昵称",
-  "avatar": "头像URL"
+  "avatar": "头像URL",
+  "email": "用户邮箱"  // 可选
 }
 ```
 
@@ -129,7 +130,117 @@
 }
 ```
 
-### 4. 退出登录
+### 4. 微信授权 URL
+
+**POST /oauth/wechat/auth**
+
+获取微信授权链接。
+
+请求参数：
+
+```json
+{
+  "redirect_uri": "https://your-domain.com/callback",
+  "state": "随机字符串，防止CSRF攻击"  // 可选
+}
+```
+
+成功响应 (200)：
+
+```json
+{
+  "auth_url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=..."
+}
+```
+
+### 5. 微信授权回调
+
+**GET /oauth/wechat/callback?code=授权码&state=状态**
+
+处理微信授权回调，通常不需要前端直接调用，应该配置为微信开放平台的回调地址。
+
+查询参数：
+- `code`: 微信授权码
+- `state`: 与授权请求时传入的state参数相同
+
+成功响应 (200)：
+
+```json
+{
+  "message": "微信登录成功",
+  "user": {
+    "id": 1,
+    "email": null,
+    "nickname": "微信用户昵称",
+    "avatar": "https://微信头像URL",
+    "signature": null,
+    "created_at": "2023-03-27T08:00:00Z",
+    "updated_at": "2023-03-27T08:00:00Z"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+### 6. 苹果授权
+
+**POST /oauth/apple/auth**
+
+获取苹果授权信息。
+
+请求参数：
+
+```json
+{
+  "redirect_uri": "https://your-domain.com/callback"
+}
+```
+
+成功响应 (200)：
+
+```json
+{
+  "message": "苹果登录需要在客户端实现，请在客户端完成授权后，将授权结果发送到 /api/v1/oauth/apple/callback"
+}
+```
+
+### 7. 苹果授权回调
+
+**POST /oauth/apple/callback**
+
+处理苹果授权回调。
+
+请求参数：
+
+```json
+{
+  "code": "授权码", // 授权码和ID令牌至少需要提供一个
+  "id_token": "ID令牌",
+  "name": "用户姓名", // 可选
+  "email": "用户邮箱", // 可选
+  "first_name": "名", // 可选，如果提供了name则忽略
+  "last_name": "姓"  // 可选，如果提供了name则忽略
+}
+```
+
+成功响应 (200)：
+
+```json
+{
+  "message": "苹果登录成功",
+  "user": {
+    "id": 1,
+    "email": "user@example.com",
+    "nickname": "Apple User",
+    "avatar": null,
+    "signature": null,
+    "created_at": "2023-03-27T08:00:00Z",
+    "updated_at": "2023-03-27T08:00:00Z"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+### 8. 退出登录
 
 **POST /logout**
 
@@ -148,7 +259,7 @@ Authorization: Bearer {token}
 }
 ```
 
-### 5. 获取用户信息
+### 9. 获取用户信息
 
 **GET /user**
 
@@ -176,7 +287,7 @@ Authorization: Bearer {token}
 }
 ```
 
-### 6. 修改用户信息
+### 10. 修改用户信息
 
 **PUT /user**
 
