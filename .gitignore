@@ -2,6 +2,7 @@
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
 #
 # Binaries for programs and plugins
+/ios-api
 *.exe
 *.exe~
 *.dll
@@ -10,12 +11,13 @@
 
 # Test binary, built with `go test -c`
 *.test
+*.tmp
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+/vendor/
 
 # Go workspace file
 go.work
@@ -23,3 +25,31 @@ go.work.sum
 
 # env file
 .env
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# MacOS system files
+.DS_Store
+
+# Log files
+*.log
+logs/
+
+# SQLite test databases
+*.db
+
+# Compile cache files
+*.o
+*.a
+
+# Generated configuration files
+/config.json
+
+# Compiled application files
+/bin/
+/dist/
+/tmp/
