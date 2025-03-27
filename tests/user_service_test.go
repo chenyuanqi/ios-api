@@ -76,7 +76,7 @@ func getTestDSN(cfg *config.Config) string {
 func createTestUser(db *gorm.DB) (*models.User, error) {
 	// 生成随机邮箱，避免冲突
 	randomEmail := fmt.Sprintf("test%d@example.com", time.Now().UnixNano())
-	
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte("testpassword"), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err

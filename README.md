@@ -59,7 +59,10 @@ DB_PASSWORD=your_db_password
 DB_PORT=your_db_port
 DB_NAME=your_db_name
 JWT_SECRET=your_jwt_secret
+APP_PORT=8080
 ```
+
+详细的环境配置说明请参考 [环境配置文档](./docs/environment.md)。
 
 4. 初始化数据库
 ```bash
@@ -81,6 +84,10 @@ go run main.go
 ```bash
 go test ./... -v
 ```
+
+## 安全说明
+
+本项目使用环境变量来存储敏感信息（如数据库密码和 JWT 密钥），避免将这些信息硬编码在代码中。确保在生产环境中使用强密码和安全的密钥。
 
 ## 许可证
 
