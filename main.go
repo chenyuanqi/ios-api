@@ -3,7 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"os/signal"
 	"regexp"
+	"syscall"
 
 	"ios-api/config"
 	"ios-api/middlewares"
@@ -41,11 +44,26 @@ func main() {
 		Config:    cfg,
 	}
 
-	// 创建设置服务
-	settingService := &services.SettingService{
-		DB:   generalDB,
-		Salt: cfg.SettingSalt,
+	// 创建设置服务（带缓存）
+	settingService, err := services.NewSettingService(generalDB, cfg.SettingSalt, cfg.CacheDir)
+	if err != nil {
+		log.Fatalf("创建设置服务失败: %v", err)
 	}
+
+	// 设置优雅关闭
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		log.Println("正在关闭服务器...")
+
+		// 关闭缓存连接
+		if err := settingService.Close(); err != nil {
+			log.Printf("关闭缓存失败: %v", err)
+		}
+
+		os.Exit(0)
+	}()
 
 	// 创建 Gin 实例
 	r := gin.Default()
@@ -70,6 +88,7 @@ func main() {
 	// 启动服务器
 	port := fmt.Sprintf(":%d", cfg.AppPort)
 	log.Printf("服务器启动，监听端口: %s", port)
+	log.Printf("缓存目录: %s", cfg.CacheDir)
 	if err := r.Run(port); err != nil {
 		log.Fatalf("服务器启动失败: %v", err)
 	}

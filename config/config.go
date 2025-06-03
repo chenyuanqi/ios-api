@@ -28,6 +28,7 @@ type Config struct {
 
 	// 设置管理配置
 	SettingSalt string
+	CacheDir    string // LevelDB缓存目录
 
 	// 微信登录配置
 	WechatAppID     string
@@ -71,6 +72,7 @@ func LoadConfig() (*Config, error) {
 
 		// 设置管理配置
 		SettingSalt: getEnv("SETTING_SALT", "default_setting_salt"),
+		CacheDir:    getEnv("CACHE_DIR", "./cache"), // 默认缓存目录
 
 		// 微信登录配置
 		WechatAppID:     getEnv("WECHAT_APP_ID", ""),

@@ -74,3 +74,44 @@ func (sc *SettingController) SetSetting(c *gin.Context) {
 
 	utils.Success(c, "设置保存成功", setting)
 }
+
+// ClearCache 清除指定key的缓存
+// DELETE /api/v1/settings/:key/cache
+func (sc *SettingController) ClearCache(c *gin.Context) {
+	key := c.Param("key")
+
+	// 验证key参数
+	if key == "" {
+		utils.ParamError(c, "key参数不能为空")
+		return
+	}
+
+	// 清除缓存
+	err := sc.SettingService.ClearCache(key)
+	if err != nil {
+		utils.ServerError(c, "清除缓存失败: "+err.Error())
+		return
+	}
+
+	utils.Success(c, "缓存清除成功", nil)
+}
+
+// ClearAllCache 清除所有设置缓存
+// DELETE /api/v1/settings/cache
+func (sc *SettingController) ClearAllCache(c *gin.Context) {
+	// 清除所有缓存
+	err := sc.SettingService.ClearAllCache()
+	if err != nil {
+		utils.ServerError(c, "清除所有缓存失败: "+err.Error())
+		return
+	}
+
+	utils.Success(c, "所有缓存清除成功", nil)
+}
+
+// GetCacheStats 获取缓存统计信息
+// GET /api/v1/settings/cache/stats
+func (sc *SettingController) GetCacheStats(c *gin.Context) {
+	stats := sc.SettingService.GetCacheStats()
+	utils.Success(c, "获取缓存统计成功", stats)
+}

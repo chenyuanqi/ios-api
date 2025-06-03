@@ -484,6 +484,64 @@ Authorization: Bearer {token}
 }
 ```
 
+### 13. 清除指定设置的缓存
+
+**DELETE /settings/{key}/cache**
+
+清除指定key的缓存数据。
+
+路径参数：
+- `key`: 设置的键名
+
+成功响应 (200)：
+
+```json
+{
+  "code": 0,
+  "message": "缓存清除成功",
+  "data": null
+}
+```
+
+### 14. 清除所有设置缓存
+
+**DELETE /settings/cache**
+
+清除所有设置的缓存数据。
+
+成功响应 (200)：
+
+```json
+{
+  "code": 0,
+  "message": "所有缓存清除成功",
+  "data": null
+}
+```
+
+### 15. 获取缓存统计信息
+
+**GET /settings/cache/stats**
+
+获取缓存系统的统计信息。
+
+成功响应 (200)：
+
+```json
+{
+  "code": 0,
+  "message": "获取缓存统计成功",
+  "data": {
+    "cache_enabled": true,
+    "cached_settings_count": 15
+  }
+}
+```
+
+响应字段说明：
+- `cache_enabled`: 缓存是否启用
+- `cached_settings_count`: 当前缓存的设置数量
+
 ## 错误响应示例
 
 ### 参数错误 (400)

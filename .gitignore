@@ -52,3 +52,6 @@ logs/
 /bin/
 /dist/
 /tmp/
+
+# LevelDB cache
+/cache/

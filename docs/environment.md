@@ -42,6 +42,9 @@ APP_PORT=8080               # 应用监听端口
 # 设置管理配置
 SETTING_SALT=your_setting_salt  # 设置管理MD5校验盐值，增强安全性
 
+# 缓存配置
+CACHE_DIR=./cache              # LevelDB缓存目录，用于设置数据缓存
+
 # 微信登录配置
 WECHAT_APP_ID=your_wechat_app_id           # 微信开放平台 AppID
 WECHAT_APP_SECRET=your_wechat_app_secret   # 微信开放平台 AppSecret
@@ -118,6 +121,9 @@ APPLE_BUNDLE_ID=your_app_bundle_id         # 应用的 Bundle ID
    # 生产环境设置管理配置（使用强盐值）
    SETTING_SALT=prod_strong_salt_abc123xyz789
    
+   # 生产环境缓存配置
+   CACHE_DIR=/var/cache/ios-api
+   
    # 生产环境微信配置
    WECHAT_APP_ID=your_prod_wechat_app_id
    WECHAT_APP_SECRET=your_prod_wechat_app_secret
@@ -128,6 +134,35 @@ APPLE_BUNDLE_ID=your_app_bundle_id         # 应用的 Bundle ID
    APPLE_PRIVATE_KEY=/secure/path/to/apple_key.p8
    APPLE_BUNDLE_ID=com.example.app
    ```
+
+## 缓存配置说明
+
+### LevelDB缓存
+
+项目使用LevelDB作为设置数据的本地缓存，以提高读取性能：
+
+- **CACHE_DIR**: 缓存文件存储目录
+  - 开发环境：`./cache`（项目根目录下的cache文件夹）
+  - 生产环境：推荐使用绝对路径，如 `/var/cache/ios-api`
+
+### 缓存功能
+
+1. **自动缓存**：首次读取设置时自动缓存到LevelDB
+2. **缓存失效**：更新设置时自动删除对应缓存
+3. **缓存管理**：提供API接口进行缓存管理
+
+### 缓存管理API
+
+- `GET /api/v1/settings/cache/stats` - 获取缓存统计信息
+- `DELETE /api/v1/settings/:key/cache` - 清除指定key的缓存
+- `DELETE /api/v1/settings/cache` - 清除所有设置缓存
+
+### 注意事项
+
+1. **磁盘空间**：确保缓存目录有足够的磁盘空间
+2. **权限**：确保应用有读写缓存目录的权限
+3. **备份**：缓存数据会在重启后保持，如需清理可删除缓存目录
+4. **性能**：缓存可显著提高设置读取性能，特别是频繁访问的设置
 
 ## 第三方登录配置说明
 

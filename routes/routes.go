@@ -62,6 +62,11 @@ func SetupRoutes(r *gin.Engine, userService *services.UserService, settingServic
 		// 设置相关API（不需要认证）
 		v1.GET("/settings/:key", settingController.GetSetting)
 		v1.PUT("/settings/:key", settingController.SetSetting)
+
+		// 缓存管理API（不需要认证，但建议在生产环境中添加认证）
+		v1.DELETE("/settings/:key/cache", settingController.ClearCache)  // 清除指定key的缓存
+		v1.DELETE("/settings/cache", settingController.ClearAllCache)    // 清除所有缓存
+		v1.GET("/settings/cache/stats", settingController.GetCacheStats) // 获取缓存统计
 	}
 
 	// 需要认证的路由
