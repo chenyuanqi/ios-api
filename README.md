@@ -32,6 +32,10 @@
 5. 用户信息修改
    - 修改头像、昵称、个性签名
 
+6. 设置管理
+   - 获取指定key的设置值
+   - 设置/更新指定key的值（需要可配置盐值的MD5校验）
+
 ## 安装和运行
 
 ### 前置条件
@@ -57,13 +61,25 @@ cp .env.example .env
 ```
 然后编辑 .env 文件，设置您的实际配置：
 ```
+# 主数据库配置（用户系统）
 DB_HOST=your_db_host
 DB_USER=your_db_user
 DB_PASSWORD=your_db_password
 DB_PORT=your_db_port
 DB_NAME=your_db_name
+
+# 通用数据库配置（设置系统）
+GENERAL_DB_HOST=your_general_db_host
+GENERAL_DB_USER=your_general_db_user
+GENERAL_DB_PASSWORD=your_general_db_password
+GENERAL_DB_PORT=your_general_db_port
+GENERAL_DB_NAME=yuanqi_general
+
 JWT_SECRET=your_jwt_secret
 APP_PORT=8080
+
+# 设置管理配置
+SETTING_SALT=chenyuanqi2025CYQ
 
 # 微信登录配置
 WECHAT_APP_ID=your_wechat_app_id
@@ -180,9 +196,10 @@ go test ./... -v
 1. **基础架构**：完成了基于Gin和GORM的项目结构搭建
 2. **用户系统**：实现了用户注册、登录、退出、信息查询和修改功能
 3. **第三方登录**：支持微信和苹果第三方授权登录
-4. **API统一规范**：所有API返回统一的响应格式，便于前端处理
-5. **配置管理**：使用环境变量管理敏感配置，提高安全性
-6. **部署文档**：完整的部署指南，支持在Ubuntu 16.04上部署
+4. **设置管理**：支持键值对设置的获取和更新，使用可配置盐值的MD5校验保证安全性
+5. **API统一规范**：所有API返回统一的响应格式，便于前端处理
+6. **配置管理**：使用环境变量管理敏感配置，支持多数据库连接
+7. **部署文档**：完整的部署指南，支持在Ubuntu 16.04上部署
 
 项目代码结构清晰，使用了MVC架构模式，具有良好的可测试性和可维护性。已经完成了基本的单元测试，确保代码的健壮性。
 

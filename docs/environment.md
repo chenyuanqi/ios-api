@@ -19,18 +19,28 @@ vim .env
 在项目根目录创建 `.env` 文件，包含以下配置项：
 
 ```
-# 数据库配置
+# 主数据库配置（用户系统）
 DB_HOST=your_db_host        # 数据库主机地址
 DB_USER=your_db_user        # 数据库用户名
 DB_PASSWORD=your_db_password # 数据库密码
 DB_PORT=3306                # 数据库端口
 DB_NAME=your_db_name        # 数据库名称
 
+# 通用数据库配置（设置系统）
+GENERAL_DB_HOST=your_general_db_host        # 通用数据库主机地址
+GENERAL_DB_USER=your_general_db_user        # 通用数据库用户名
+GENERAL_DB_PASSWORD=your_general_db_password # 通用数据库密码
+GENERAL_DB_PORT=3306                        # 通用数据库端口
+GENERAL_DB_NAME=yuanqi_general              # 通用数据库名称
+
 # JWT配置
 JWT_SECRET=your_jwt_secret  # JWT 密钥，用于生成和验证用户令牌
 
 # 应用配置
 APP_PORT=8080               # 应用监听端口
+
+# 设置管理配置
+SETTING_SALT=your_setting_salt  # 设置管理MD5校验盐值，增强安全性
 
 # 微信登录配置
 WECHAT_APP_ID=your_wechat_app_id           # 微信开放平台 AppID
@@ -57,6 +67,9 @@ APPLE_BUNDLE_ID=your_app_bundle_id         # 应用的 Bundle ID
    JWT_SECRET=dev_jwt_secret
    APP_PORT=8080
    
+   # 设置管理配置
+   SETTING_SALT=dev_setting_salt_2024
+   
    # 开发环境微信配置
    WECHAT_APP_ID=your_dev_wechat_app_id
    WECHAT_APP_SECRET=your_dev_wechat_app_secret
@@ -78,6 +91,9 @@ APPLE_BUNDLE_ID=your_app_bundle_id         # 应用的 Bundle ID
    JWT_SECRET=test_jwt_secret
    APP_PORT=8080
    
+   # 测试环境设置管理配置
+   SETTING_SALT=test_setting_salt_2024
+   
    # 测试微信配置（可使用开发账号）
    WECHAT_APP_ID=your_test_wechat_app_id
    WECHAT_APP_SECRET=your_test_wechat_app_secret
@@ -98,6 +114,9 @@ APPLE_BUNDLE_ID=your_app_bundle_id         # 应用的 Bundle ID
    DB_NAME=yuanqi_ios_prod
    JWT_SECRET=long_random_string
    APP_PORT=80
+   
+   # 生产环境设置管理配置（使用强盐值）
+   SETTING_SALT=prod_strong_salt_abc123xyz789
    
    # 生产环境微信配置
    WECHAT_APP_ID=your_prod_wechat_app_id

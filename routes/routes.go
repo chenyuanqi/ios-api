@@ -9,7 +9,7 @@ import (
 )
 
 // SetupRoutes 设置路由
-func SetupRoutes(r *gin.Engine, userService *services.UserService) {
+func SetupRoutes(r *gin.Engine, userService *services.UserService, settingService *services.SettingService) {
 	// 创建微信服务
 	wechatService := &services.WechatService{
 		AppID:     userService.Config.WechatAppID,
@@ -36,6 +36,11 @@ func SetupRoutes(r *gin.Engine, userService *services.UserService) {
 		AppleService:  appleService,
 	}
 
+	// 创建设置控制器
+	settingController := &controllers.SettingController{
+		SettingService: settingService,
+	}
+
 	// 无需认证的路由
 	v1 := r.Group("/api/v1")
 	{
@@ -53,6 +58,10 @@ func SetupRoutes(r *gin.Engine, userService *services.UserService) {
 		// 苹果授权相关
 		v1.POST("/oauth/apple/auth", oauthController.AppleAuth)
 		v1.POST("/oauth/apple/callback", oauthController.AppleCallback)
+
+		// 设置相关API（不需要认证）
+		v1.GET("/settings/:key", settingController.GetSetting)
+		v1.PUT("/settings/:key", settingController.SetSetting)
 	}
 
 	// 需要认证的路由

@@ -368,6 +368,122 @@ Authorization: Bearer {token}
 }
 ```
 
+### 11. 获取设置
+
+**GET /settings/{key}**
+
+获取指定key的设置值。
+
+路径参数：
+- `key`: 设置的键名
+
+成功响应 (200)：
+
+```json
+{
+  "code": 0,
+  "message": "获取设置成功",
+  "data": {
+    "key": "app.theme",
+    "value": "dark",
+    "created_at": "2023-03-27T08:00:00Z",
+    "updated_at": "2023-03-27T09:00:00Z"
+  }
+}
+```
+
+### 12. 设置/更新设置
+
+**PUT /settings/{key}**
+
+设置或更新指定key的值。需要提供key的MD5值进行安全校验。
+
+路径参数：
+- `key`: 设置的键名
+
+请求参数：
+
+```json
+{
+  "value": "设置的值",
+  "key_md5": "key的MD5值"
+}
+```
+
+**MD5校验说明**：
+- 需要计算key+盐值的MD5值并在请求中提供
+- 盐值通过环境变量 `SETTING_SALT` 配置，请联系系统管理员获取
+- 计算方式：MD5(key + SETTING_SALT)
+- 例如，key为"app.theme"，盐值为"your_salt"，则计算MD5("app.theme" + "your_salt")
+- 可以使用在线MD5工具或编程方式计算
+
+成功响应 (200)：
+
+```json
+{
+  "code": 0,
+  "message": "设置保存成功",
+  "data": {
+    "key": "app.theme",
+    "value": "dark",
+    "created_at": "2023-03-27T08:00:00Z",
+    "updated_at": "2023-03-27T09:00:00Z"
+  }
+}
+```
+
+**设置管理错误响应示例**
+
+### 设置不存在 (404)
+
+```json
+{
+  "code": 1004,
+  "message": "设置不存在",
+  "data": null
+}
+```
+
+### MD5校验失败 (401)
+
+```json
+{
+  "code": 1002,
+  "message": "MD5校验失败，无权限操作此设置",
+  "data": null
+}
+```
+
+### Key格式错误 (400)
+
+```json
+{
+  "code": 1001,
+  "message": "key格式不正确，只允许字母、数字、下划线、点号",
+  "data": null
+}
+```
+
+### Key长度错误 (400)
+
+```json
+{
+  "code": 1001,
+  "message": "key长度必须在1-64字符之间",
+  "data": null
+}
+```
+
+### Value长度错误 (400)
+
+```json
+{
+  "code": 1001,
+  "message": "value长度不能超过10KB",
+  "data": null
+}
+```
+
 ## 错误响应示例
 
 ### 参数错误 (400)
