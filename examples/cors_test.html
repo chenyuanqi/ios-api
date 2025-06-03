@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORS 跨域测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 3px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 5px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>iOS API CORS 跨域测试</h1>
+    
+    <div class="test-section">
+        <h3>API 基础URL设置</h3>
+        <input type="text" id="apiUrl" value="http://localhost:8080/api/v1" placeholder="API基础URL">
+        <button onclick="updateApiUrl()">更新URL</button>
+    </div>
+
+    <div class="test-section">
+        <h3>1. 测试简单GET请求</h3>
+        <p>测试获取设置信息（不需要认证）</p>
+        <button onclick="testSimpleGet()">测试 GET /settings/app.theme</button>
+        <div id="simpleGetResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>2. 测试POST请求</h3>
+        <p>测试用户登录（需要发送JSON数据）</p>
+        <input type="text" id="loginEmail" placeholder="邮箱" value="test@example.com">
+        <input type="text" id="loginPassword" placeholder="密码" value="password123">
+        <button onclick="testPost()">测试 POST /login</button>
+        <div id="postResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>3. 测试带认证的请求</h3>
+        <p>测试获取用户信息（需要Authorization头）</p>
+        <input type="text" id="authToken" placeholder="JWT Token" style="width: 500px;">
+        <button onclick="testAuthRequest()">测试 GET /user</button>
+        <div id="authResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>4. 测试OPTIONS预检请求</h3>
+        <p>测试浏览器的预检请求</p>
+        <button onclick="testPreflight()">测试 OPTIONS 预检</button>
+        <div id="preflightResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>5. 测试PUT请求</h3>
+        <p>测试更新设置（需要发送JSON数据）</p>
+        <input type="text" id="settingKey" placeholder="设置键" value="test.setting">
+        <input type="text" id="settingValue" placeholder="设置值" value="test value">
+        <input type="text" id="settingMd5" placeholder="MD5值" value="请计算key+salt的MD5">
+        <button onclick="testPut()">测试 PUT /settings/{key}</button>
+        <div id="putResult" class="result"></div>
+    </div>
+
+    <script>
+        let API_BASE_URL = 'http://localhost:8080/api/v1';
+
+        function updateApiUrl() {
+            API_BASE_URL = document.getElementById('apiUrl').value;
+            showResult('simpleGetResult', `API URL 已更新为: ${API_BASE_URL}`, 'success');
+        }
+
+        function showResult(elementId, text, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = text;
+            element.className = `result ${type}`;
+        }
+
+        // 1. 测试简单GET请求
+        async function testSimpleGet() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/settings/app.theme`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+                const result = `状态码: ${response.status}
+响应头: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}
+响应体: ${JSON.stringify(data, null, 2)}`;
+                
+                showResult('simpleGetResult', result, response.ok ? 'success' : 'error');
+            } catch (error) {
+                showResult('simpleGetResult', `错误: ${error.message}`, 'error');
+            }
+        }
+
+        // 2. 测试POST请求
+        async function testPost() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+                const result = `状态码: ${response.status}
+响应头: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}
+响应体: ${JSON.stringify(data, null, 2)}`;
+                
+                showResult('postResult', result, response.ok ? 'success' : 'error');
+
+                // 如果登录成功，自动填入token
+                if (response.ok && data.data && data.data.token) {
+                    document.getElementById('authToken').value = data.data.token;
+                }
+            } catch (error) {
+                showResult('postResult', `错误: ${error.message}`, 'error');
+            }
+        }
+
+        // 3. 测试带认证的请求
+        async function testAuthRequest() {
+            const token = document.getElementById('authToken').value;
+
+            if (!token) {
+                showResult('authResult', '请先填入JWT Token', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/user`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                const result = `状态码: ${response.status}
+响应头: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}
+响应体: ${JSON.stringify(data, null, 2)}`;
+                
+                showResult('authResult', result, response.ok ? 'success' : 'error');
+            } catch (error) {
+                showResult('authResult', `错误: ${error.message}`, 'error');
+            }
+        }
+
+        // 4. 测试OPTIONS预检请求
+        async function testPreflight() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/user`, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Origin': window.location.origin,
+                        'Access-Control-Request-Method': 'GET',
+                        'Access-Control-Request-Headers': 'Content-Type, Authorization'
+                    }
+                });
+
+                const result = `状态码: ${response.status}
+响应头: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}
+响应体: ${response.status === 204 ? '(空响应体，符合预期)' : await response.text()}`;
+                
+                showResult('preflightResult', result, response.status === 204 ? 'success' : 'error');
+            } catch (error) {
+                showResult('preflightResult', `错误: ${error.message}`, 'error');
+            }
+        }
+
+        // 5. 测试PUT请求
+        async function testPut() {
+            const key = document.getElementById('settingKey').value;
+            const value = document.getElementById('settingValue').value;
+            const md5 = document.getElementById('settingMd5').value;
+
+            if (!key || !value || !md5 || md5 === '请计算key+salt的MD5') {
+                showResult('putResult', '请填写完整的设置信息和正确的MD5值', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/settings/${key}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        value: value,
+                        key_md5: md5
+                    })
+                });
+
+                const data = await response.json();
+                const result = `状态码: ${response.status}
+响应头: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}
+响应体: ${JSON.stringify(data, null, 2)}`;
+                
+                showResult('putResult', result, response.ok ? 'success' : 'error');
+            } catch (error) {
+                showResult('putResult', `错误: ${error.message}`, 'error');
+            }
+        }
+
+        // 页面加载时显示使用说明
+        window.onload = function() {
+            showResult('simpleGetResult', '点击上方按钮开始测试CORS功能...', 'success');
+        };
+    </script>
+</body>
+</html> 

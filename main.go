@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
+	"regexp"
 
 	"ios-api/config"
+	"ios-api/middlewares"
 	"ios-api/routes"
 	"ios-api/services"
 
@@ -47,6 +49,20 @@ func main() {
 
 	// 创建 Gin 实例
 	r := gin.Default()
+
+	pattern := `^https?://([a-z0-9-]+\.)?chenyuanqi\.com(:[0-9]+)?$`
+	regex, err := regexp.Compile(pattern)
+	if err != nil {
+		panic("无法解析 CORS 正则：" + err.Error())
+	}
+
+	corsCfg := middlewares.CORSConfig{
+		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:8080", "http://127.0.0.1:5500"},
+		RegexAllowOrigin: regex,
+	}
+
+	// 配置CORS中间件
+	r.Use(middlewares.CORSMiddleware(corsCfg))
 
 	// 设置路由
 	routes.SetupRoutes(r, userService, settingService)

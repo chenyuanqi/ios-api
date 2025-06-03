@@ -7,7 +7,7 @@
 项目采用典型的 MVC 架构：
 - `config`：配置文件处理
 - `controllers`：API 控制器，处理请求和响应
-- `middlewares`：中间件，如身份验证、日志等
+- `middlewares`：中间件，如身份验证、日志、CORS等
 - `models`：数据模型，对应数据库表结构
 - `repositories`：数据访问层，封装数据库操作
 - `routes`：路由定义，API 路径配置
@@ -35,6 +35,13 @@
 6. 设置管理
    - 获取指定key的设置值
    - 设置/更新指定key的值（需要可配置盐值的MD5校验）
+
+7. **跨域访问支持（CORS）**
+   - 支持所有来源的跨域请求（开发环境）
+   - 支持常用的HTTP方法（GET、POST、PUT、DELETE、OPTIONS）
+   - 支持认证头部（Authorization）
+   - 自动处理预检请求（OPTIONS）
+   - 可配置允许的域名列表（生产环境推荐）
 
 ## 安装和运行
 
@@ -173,6 +180,10 @@ POST /api/v1/oauth/login
 ## API 文档
 
 详细的 API 文档请参考 [API文档](./docs/api.md)
+
+## 跨域访问配置
+
+本项目已集成完整的CORS跨域支持，详细配置说明请参考 [CORS配置文档](./docs/cors.md)
 
 ## 部署指南
 
