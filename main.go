@@ -50,6 +50,9 @@ func main() {
 		log.Fatalf("创建设置服务失败: %v", err)
 	}
 
+	// 创建AI服务
+	aiService := services.NewAIService(cfg)
+
 	// 设置优雅关闭
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
@@ -83,7 +86,7 @@ func main() {
 	r.Use(middlewares.CORSMiddleware(corsCfg))
 
 	// 设置路由
-	routes.SetupRoutes(r, userService, settingService)
+	routes.SetupRoutes(r, userService, settingService, aiService)
 
 	// 启动服务器
 	port := fmt.Sprintf(":%d", cfg.AppPort)

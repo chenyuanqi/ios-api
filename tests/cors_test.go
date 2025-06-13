@@ -16,7 +16,10 @@ func TestCORSMiddleware(t *testing.T) {
 
 	// 创建路由器
 	r := gin.New()
-	r.Use(middlewares.CORSMiddleware())
+	r.Use(middlewares.CORSMiddleware(middlewares.CORSConfig{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		RegexAllowOrigin: nil,
+	}))
 
 	// 添加测试路由
 	r.GET("/test", func(c *gin.Context) {

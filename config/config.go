@@ -39,6 +39,10 @@ type Config struct {
 	AppleKeyID      string
 	ApplePrivateKey string
 	AppleBundleID   string
+
+	// AI服务配置
+	AIAPIKey  string
+	AIBaseURL string
 }
 
 // LoadConfig 从环境变量加载配置
@@ -83,6 +87,10 @@ func LoadConfig() (*Config, error) {
 		AppleKeyID:      getEnv("APPLE_KEY_ID", ""),
 		ApplePrivateKey: getEnv("APPLE_PRIVATE_KEY", ""),
 		AppleBundleID:   getEnv("APPLE_BUNDLE_ID", ""),
+
+		// AI服务配置
+		AIAPIKey:  getEnv("AI_API_KEY", ""),
+		AIBaseURL: getEnv("AI_BASE_URL", "https://geekai.co/api/v1"),
 	}, nil
 }
 
