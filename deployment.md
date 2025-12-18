@@ -139,8 +139,8 @@ After=network.target mysql.service
 Type=simple
 User=www-data
 Group=www-data
-WorkingDirectory=/var/www/ios-api
-ExecStart=/var/www/ios-api/ios-api
+WorkingDirectory=/data/www/ios-api
+ExecStart=/data/www/ios-api/ios-api
 Restart=on-failure
 RestartSec=5
 StandardOutput=syslog
@@ -155,8 +155,8 @@ EOF
 ### 2. 设置文件权限
 
 ```bash
-sudo chown -R www-data:www-data /var/www/ios-api
-sudo chmod +x /var/www/ios-api/ios-api
+sudo chown -R www-data:www-data /data/www/ios-api
+sudo chmod +x /data/www/ios-api/ios-api
 ```
 
 ### 3. 启动服务

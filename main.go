@@ -71,6 +71,9 @@ func main() {
 	// 创建 Gin 实例
 	r := gin.Default()
 
+	// 配置信任的代理（Nginx）
+	r.SetTrustedProxies([]string{"127.0.0.1", "::1"})
+
 	pattern := `^https?://([a-z0-9-]+\.)?chenyuanqi\.com(:[0-9]+)?$`
 	regex, err := regexp.Compile(pattern)
 	if err != nil {
