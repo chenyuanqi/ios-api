@@ -43,4 +43,22 @@ CREATE TABLE IF NOT EXISTS `user_sessions` (
   UNIQUE KEY `user_sessions_token_unique` (`token`),
   KEY `user_sessions_user_id_foreign` (`user_id`),
   CONSTRAINT `user_sessions_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- yuanqi_general 数据库
+-- =====================================================
+
+-- 创建通用数据库（如果不存在）
+CREATE DATABASE IF NOT EXISTS `yuanqi_general` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+USE `yuanqi_general`;
+
+-- 设置表
+CREATE TABLE IF NOT EXISTS `settings` (
+  `key` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '键，唯一标识',
+  `value` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '内容',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '记录更新时间',
+  PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci; 
